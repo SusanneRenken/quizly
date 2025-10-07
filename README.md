@@ -38,3 +38,18 @@ ffmpeg -version
 
 ## Setup and Installation
 
+
+
+## Tests & Coverage
+
+Tests are written using **Django's built-in TestCase** and  
+**REST framework's APITestCase** classes.
+
+Run all tests:
+```bash
+python manage.py test
+
+coverage run manage.py test
+coverage report
+```
+
