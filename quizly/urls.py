@@ -21,6 +21,6 @@ from quizly.core.view import HealthView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("api/health/", HealthView.as_view(), name="health"),
-    # path('api/auth/', include('auth_app.api.urls')),
+    path('api/', include('auth_app.api.urls')),
     # path('api/management/', include('management_app.api.urls')),
 ]
