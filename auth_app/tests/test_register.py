@@ -2,7 +2,6 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 from django.contrib.auth.models import User
-from auth_app.api.serializer import RegistrationSerializer
 
 class RegistrationTests(APITestCase):
 
@@ -17,7 +16,7 @@ class RegistrationTests(APITestCase):
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertTrue(User.objects.filter(username="testuser").exists())
-        
+
     def test_create_user_password_mismatch(self):
         url = reverse('register')
         data = {
