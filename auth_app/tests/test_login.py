@@ -26,3 +26,12 @@ class LoginTests(APITestCase):
         self.assertEqual(response.data['detail'], "Login successfully!")
         self.assertIn('user', response.data)
         self.assertEqual(response.data['user']['username'], "testuser")
+
+    def test_login_invalid_credentials(self):
+        login_data = {
+            "username": "testuser",
+            "password": "wrongpassword"
+        }
+        response = self.client.post(self.login_url, login_data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertIn('detail', response.data)
