@@ -13,7 +13,6 @@ class LoginTests(APITestCase):
         self.client.post(reverse('register'), self.user_data, format='json')
         self.login_url = reverse('login')
 
-
     def test_refresh_token(self):
         login_data = {
             "username": "testuser",
