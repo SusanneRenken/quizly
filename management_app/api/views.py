@@ -15,4 +15,4 @@ class QuizCreateView(generics.CreateAPIView):
 
 class QuizViewSet(viewsets.ModelViewSet):
     serializer_class = QuizSerializer
-    queryset = Quiz.objects.all()  # später: auf request.user filtern
+    queryset = Quiz.objects.all()  # later: set request.user filter
