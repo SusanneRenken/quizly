@@ -35,26 +35,33 @@ python manage.py runserver
 ## Project Structure
 ```
 quizly-backend/│
-├── auth_app/                 # Authentifizierung
-│   ├── api/                  # 
-│   │   ├── permissions.py    # 
-│   │   ├── serializer.py     # 
-│   │   ├── urls.py           # 
-│   │   ├── view.py           # 
-├── manage_app/               # Quiz-Logik
-│   ├── api/                  # 
-│   │   ├── permissions.py    # 
-│   │   ├── serializer.py     # 
-│   │   ├── urls.py           # 
-│   │   ├── view.py           # 
-└── quizly/                   # Hilfsfunktionen
-│   ├── core/                 # 
-│   │   ├── test.py           # 
-│   │   ├── view.py           # 
-│   ├── settings.py           # 
-│   ├── urls.py               # 
-└── manage.py                 # 
-└── manage.py                 # 
+├── auth_app/                        # Authentifizierung
+│   ├── api/                         # 
+│   │   ├── serializer.py            # 
+│   │   ├── urls.py                  # 
+│   │   ├── view.py                  # 
+│   ├── tests/                       # 
+├── management_app/                  # Quiz-Logik
+│   ├── api/                         # 
+│   │   ├── permissions.py           # 
+│   │   ├── serializer.py            # 
+│   │   ├── urls.py                  # 
+│   │   ├── view.py                  # 
+│   ├── services/                    # 
+│   │   ├── error.py                 # 
+│   │   ├── helpers.py               # 
+│   │   ├── persist_quiz.py          # 
+│   │   ├── quiz_pipeline_prod.py    # 
+│   │   ├── quiz_pipeline_stub.py    # 
+│   ├── tests/                       # 
+└── quizly/                          # Hilfsfunktionen
+│   ├── core/                        # 
+│   │   ├── test.py                  # 
+│   │   ├── view.py                  # 
+│   ├── settings.py                  # 
+│   ├── urls.py                      # 
+└── manage.py                        # 
+└── manage.py                        # 
 
 ```
 
@@ -78,4 +85,3 @@ python manage.py test
 coverage run manage.py test
 coverage report
 ```
-
