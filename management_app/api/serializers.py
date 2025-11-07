@@ -4,6 +4,7 @@ from urllib.parse import urlparse, parse_qs
 from management_app.models import Question, Quiz
 from management_app.services.quiz_pipeline_stub import build_quiz_stub
 from management_app.services.persist_quiz import persist_quiz
+from management_app.services.error import AIPipelineError
 
 YOUTUBE_DOMAINS = {"youtube.com", "www.youtube.com", "m.youtube.com", "youtu.be"}
 VIDEO_ID_RE = re.compile(r"^[A-Za-z0-9_-]{11}$")
@@ -56,7 +57,10 @@ class CreateQuizSerializer(serializers.Serializer):
         user = self.context["request"].user
         video_url = validated_data["url"]
 
-        payload = build_quiz_stub(video_url)
+        try:
+            payload = build_quiz_stub(video_url)
+        except AIPipelineError:
+            raise
 
         quiz = persist_quiz(owner=user, video_url=video_url, payload=payload)
 
