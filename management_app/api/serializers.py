@@ -1,7 +1,9 @@
 import re
+from django.conf import settings
 from rest_framework import serializers
 from urllib.parse import urlparse, parse_qs
 from management_app.models import Question, Quiz
+from management_app.services.quiz_pipeline_prod import build_quiz_prod
 from management_app.services.quiz_pipeline_stub import build_quiz_stub
 from management_app.services.persist_quiz import persist_quiz
 from management_app.services.error import AIPipelineError
@@ -58,7 +60,11 @@ class CreateQuizSerializer(serializers.Serializer):
         video_url = validated_data["url"]
 
         try:
-            payload = build_quiz_stub(video_url)
+            mode = getattr(settings, "QUIZLY_PIPELINE_MODE", "stub")
+            if mode == "prod":
+                payload = build_quiz_prod(video_url)
+            else:
+                payload = build_quiz_stub(video_url)
         except AIPipelineError:
             raise
 

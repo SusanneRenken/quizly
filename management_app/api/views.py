@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from rest_framework.permissions import AllowAny
 from rest_framework import status, generics, viewsets
 from rest_framework.response import Response
 from management_app.models import Quiz
@@ -6,6 +7,7 @@ from .serializers import QuizSerializer, CreateQuizSerializer
 
 class QuizCreateView(generics.CreateAPIView):
     serializer_class = CreateQuizSerializer
+    permission_classes = [AllowAny]  # later: IsAuthenticated
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
