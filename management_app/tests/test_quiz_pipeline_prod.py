@@ -105,7 +105,6 @@ class QuizPipelineProdBuildTests(SimpleTestCase):
         fake_payload = {"title": "T", "description": "D", "questions": []}
         mock_generate.return_value = fake_payload
 
-        # Darf keinen Fehler werfen, obwohl remove/rmdir OSError werfen
         result = build_quiz_prod("https://www.youtube.com/watch?v=abcdefghijk")
 
         self.assertEqual(result, fake_payload)

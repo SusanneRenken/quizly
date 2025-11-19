@@ -51,7 +51,7 @@ class CreateQuizStubTests(APITestCase):
     def test_invalid_payload_structure_returns_502_no_db_write(self, mock_build):
         bad = _make_valid_payload()
         bad["questions"][3]["question_options"] = [
-            "A", "B", "C"]  # 3 statt 4 Optionen
+            "A", "B", "C"]
         mock_build.return_value = bad
         res = self.client.post(self.url, self.valid_url, format="json")
         self.assertEqual(res.status_code, status.HTTP_502_BAD_GATEWAY)

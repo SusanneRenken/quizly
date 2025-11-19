@@ -1,7 +1,4 @@
-# management_app/tests/test_quiz_viewset.py
-
 from django.contrib.auth.models import User
-from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
 
