@@ -8,8 +8,10 @@ from management_app.services.quiz_pipeline_stub import build_quiz_stub
 from management_app.services.persist_quiz import persist_quiz
 from management_app.services.error import AIPipelineError
 
-YOUTUBE_DOMAINS = {"youtube.com", "www.youtube.com", "m.youtube.com", "youtu.be"}
+YOUTUBE_DOMAINS = {"youtube.com",
+                   "www.youtube.com", "m.youtube.com", "youtu.be"}
 VIDEO_ID_RE = re.compile(r"^[A-Za-z0-9_-]{11}$")
+
 
 class QuestionSerializer(serializers.ModelSerializer):
     question_options = serializers.ListField(
@@ -20,8 +22,13 @@ class QuestionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Question
-        fields = ['id', 'question_title', 'question_options',
-                  'answer', 'created_at', 'updated_at']
+        fields = ['id', 'question_title', 'question_options', 'answer']
+        read_only_fields = ['id']
+
+
+class QuestionWithTimestampsSerializer(QuestionSerializer):
+    class Meta(QuestionSerializer.Meta):
+        fields = QuestionSerializer.Meta.fields + ['created_at', 'updated_at']
         read_only_fields = ['id', 'created_at', 'updated_at']
 
 
@@ -32,7 +39,15 @@ class QuizSerializer(serializers.ModelSerializer):
         model = Quiz
         fields = ['id', 'title', 'description', 'created_at', 'updated_at',
                   'video_url', 'questions']
-        read_only_fields = ['id', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'video_url', 'questions', 'description']
+
+
+class QuizWithTimestampsSerializer(serializers.ModelSerializer):
+    questions = QuestionWithTimestampsSerializer(many=True, read_only=True)
+
+    class Meta(QuizSerializer.Meta):
+        pass
+
 
 class CreateQuizSerializer(serializers.Serializer):
     url = serializers.URLField()
@@ -54,7 +69,7 @@ class CreateQuizSerializer(serializers.Serializer):
             raise serializers.ValidationError("Invalid YouTube video ID.")
 
         return f"https://www.youtube.com/watch?v={video_id}"
-    
+
     def create(self, validated_data):
         user = self.context["request"].user
         video_url = validated_data["url"]
@@ -71,4 +86,3 @@ class CreateQuizSerializer(serializers.Serializer):
         quiz = persist_quiz(owner=user, video_url=video_url, payload=payload)
 
         return quiz
-        

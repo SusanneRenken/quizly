@@ -149,4 +149,4 @@ SIMPLE_JWT = {
 }
 
 # Quizly: pipeline mode ("stub" or "prod")
-QUIZLY_PIPELINE_MODE = "prod"
+QUIZLY_PIPELINE_MODE = "stub"
