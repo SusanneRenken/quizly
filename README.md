@@ -1,16 +1,21 @@
-# Quizly Backend
+# Quizly – Backend (Django REST Framework)
 
-Quizly is an interactive quiz application that allows users to create, take, and manage quizzes. The backend is built with Django REST Framework and supports AI-powered quiz generation from YouTube videos.
+Quizly automatically converts YouTube videos into quizzes with 10 AI‑generated questions.  
+This backend provides the core API for authentication, quiz creation (stub or production AI pipeline), and quiz management.
+
+---
 
 ## Features
 
-- **User Authentication**: Register, login, and logout with JWT (HttpOnly cookies)
-- **Quiz Generation**: Create quizzes from YouTube URLs (Stub & AI-Pipeline)
-- **Quiz Management**: List, detail, edit, delete
-- **Quiz Taking**: Multiple-choice questions
-- **Results Review**: Correct/incorrect answers
+- User registration & login (JWT via HttpOnly cookies)
+- Quiz generation from YouTube URLs (stub mode or Whisper + Gemini)
+- Manage own quizzes (List, Detail, Update, Delete)
+- Clear error handling and clean API structure
+- Full automated test suite with high coverage
 
-## Requirements
+---
+
+## Tech Stack
 
 - Python 3.12  
 - Django 5 + DRF  
@@ -19,25 +24,33 @@ Quizly is an interactive quiz application that allows users to create, take, and
 - Whisper  
 - Gemini Flash (via google-genai)
 
-The backend uses **JWT authentication with HttpOnly cookies**:
-- Login sets the access token as an HttpOnly cookie  
-- Protected routes are authenticated via this cookie  
-- The frontend has no direct access to the token  
+---
 
-## Tech Stack
-- Python · Django · DRF  
-- FFmpeg · yt_dlp · Whisper · Gemini AI  
-- pytest + coverage  
-
-## Local Setup
+## Quickstart (Development)
 
 ```bash
-python -m venv venv
-venv\Scripts\activate        # Windows
+# Clone the repository
+git clone <repo-url>
+cd Quizly-backend
+
+# Create a virtual environment
+python -m venv env
+.\env\Scripts\activate.ps1  # Windows
+
+# Install dependencies
 pip install -r requirements.txt
+
+# Apply migrations
 python manage.py migrate
+
+# Start the development server
 python manage.py runserver
 ```
+
+API base URL: http://localhost:8000/api/  
+Admin panel: http://localhost:8000/admin/
+
+---
 
 ## Environment Variables (`.env` setup)
 
@@ -52,11 +65,72 @@ GEMINI_API_KEY=your-gemini-api-key
 
 Django loads environment variables automatically via `python-dotenv`.
 
-## Running the Development Server
+---
+
+## FFmpeg Note
+
+FFmpeg must be installed globally for Whisper to work:
 
 ```bash
-python manage.py runserver
+ffmpeg -version
 ```
+
+---
+
+## Tests & Coverage
+
+```bash
+coverage erase
+coverage run manage.py test
+coverage report
+```
+
+---
+
+## Authentication
+
+The project uses JWT authentication via HttpOnly cookies.
+
+Available endpoints:
+
+- `POST /api/register/`
+- `POST /api/login/`
+- `POST /api/logout/`
+
+---
+
+## createQuiz – AI / Stub Pipeline
+
+Endpoint for converting a YouTube URL into a quiz.
+
+**POST `/api/createQuiz/`**
+
+Example request:
+
+```json
+{ "url": "https://www.youtube.com/watch?v=XXXXXXXXXXX" }
+```
+
+Modes:
+
+- `QUIZLY_PIPELINE_MODE=stub` – deterministic stub output (fast, for development)
+- `QUIZLY_PIPELINE_MODE=prod` – Whisper transcription + Gemini Flash quiz generation
+
+---
+
+## Quiz Management Endpoints
+
+Users can only access their own quizzes.  
+Accessing quizzes of other users returns `403 Forbidden`.
+
+| Method | Endpoint | Description |
+|--------|----------|--------------|
+| GET | `/api/quizzes/` | List all quizzes of the authenticated user |
+| GET | `/api/quizzes/{id}/` | Retrieve a single quiz |
+| PATCH | `/api/quizzes/{id}/` | Update only the `title` field |
+| DELETE | `/api/quizzes/{id}/` | Delete a quiz including its questions |
+
+---
 
 ## Project Structure
 
@@ -89,20 +163,4 @@ quizly-backend/
 │   ├── settings.py
 │   ├── urls.py
 └── manage.py
-```
-
-## FFmpeg Note
-
-FFmpeg must be installed globally for Whisper to work:
-
-```bash
-ffmpeg -version
-```
-
-## Tests & Coverage
-
-```bash
-python manage.py test
-coverage run manage.py test
-coverage report
 ```
