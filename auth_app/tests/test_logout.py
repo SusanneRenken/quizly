@@ -27,14 +27,10 @@ class LogoutTests(APITestCase):
         self.assertEqual(logout_response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             logout_response.data['detail'],
-            "Log-Out successfully! All Tokens will be deleted. Refresh token is now invalid."
+            "Log-Out successfully! All tokens deleted. Refresh token is now invalid."
         )
 
     def test_logout_with_invalid_refresh_token_triggers_tokenerror(self):
-        """
-        Testet, dass der except TokenError-Zweig aufgerufen wird,
-        wenn der Refresh Token ungültig ist.
-        """
         login_data = {"username": "testuser", "password": "testpassword"}
         login_response = self.client.post(self.login_url, login_data, format='json')
         self.assertEqual(login_response.status_code, status.HTTP_200_OK)
@@ -49,5 +45,5 @@ class LogoutTests(APITestCase):
         self.assertEqual(logout_response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             logout_response.data['detail'],
-            "Log-Out successfully! All Tokens will be deleted. Refresh token is now invalid."
+            "Log-Out successfully! All tokens deleted. Refresh token is now invalid."
         )
