@@ -7,7 +7,6 @@ from .serializers import QuizSerializer, CreateQuizSerializer
 
 class QuizCreateView(generics.CreateAPIView):
     serializer_class = CreateQuizSerializer
-    permission_classes = [AllowAny]  # later: IsAuthenticated
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)

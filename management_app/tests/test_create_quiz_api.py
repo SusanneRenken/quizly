@@ -1,9 +1,11 @@
 from django.urls import reverse
+from django.test import override_settings
 from rest_framework import status
 from rest_framework.test import APITestCase
 from django.contrib.auth.models import User
 from unittest.mock import patch
 from management_app.models import Quiz
+from management_app.services.error import AIPipelineError
 
 
 def _make_valid_payload():
@@ -21,6 +23,7 @@ def _make_valid_payload():
     }
 
 
+@override_settings(QUIZLY_PIPELINE_MODE="stub")
 class CreateQuizApiTests(APITestCase):
     def setUp(self):
         self.user = User.objects.create_user(username="tester", password="secret123")
@@ -48,3 +51,27 @@ class CreateQuizApiTests(APITestCase):
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         quiz = Quiz.objects.first()
         self.assertEqual(quiz.video_url, "https://www.youtube.com/watch?v=abcdefghijk")
+
+    @override_settings(QUIZLY_PIPELINE_MODE="prod")
+    @patch("management_app.api.serializers.build_quiz_prod", return_value=_make_valid_payload())
+    def test_create_quiz_uses_prod_pipeline_and_persists_quiz(self, mock_build):
+        payload = {"url": "https://www.youtube.com/watch?v=abcdefghijk"}
+
+        res = self.client.post(self.url, payload, format="json")
+
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        mock_build.assert_called_once_with("https://www.youtube.com/watch?v=abcdefghijk")
+        self.assertEqual(Quiz.objects.count(), 1)
+        quiz = Quiz.objects.first()
+        self.assertEqual(quiz.video_url, "https://www.youtube.com/watch?v=abcdefghijk")
+        self.assertEqual(quiz.questions.count(), 10)
+
+    @override_settings(QUIZLY_PIPELINE_MODE="prod")
+    @patch("management_app.api.serializers.build_quiz_prod", side_effect=AIPipelineError("boom"))
+    def test_prod_pipeline_failure_returns_502_and_no_db_write(self, _mock_build):
+        payload = {"url": "https://www.youtube.com/watch?v=abcdefghijk"}
+
+        res = self.client.post(self.url, payload, format="json")
+
+        self.assertEqual(res.status_code, status.HTTP_502_BAD_GATEWAY)
+        self.assertEqual(Quiz.objects.count(), 0)

@@ -1,4 +1,5 @@
 from django.urls import reverse
+from django.test import override_settings
 from rest_framework import status
 from rest_framework.test import APITestCase
 from django.contrib.auth.models import User
@@ -22,9 +23,11 @@ def _make_valid_payload():
     }
 
 
+@override_settings(QUIZLY_PIPELINE_MODE="stub")
 class CreateQuizStubTests(APITestCase):
     def setUp(self):
-        self.user = User.objects.create_user(username="tester", password="secret123")
+        self.user = User.objects.create_user(
+            username="tester", password="secret123")
         self.client.force_authenticate(user=self.user)
         self.url = reverse("create-quiz")
         self.valid_url = {"url": "https://www.youtube.com/watch?v=abcdefghijk"}
@@ -47,7 +50,8 @@ class CreateQuizStubTests(APITestCase):
     @patch("management_app.api.serializers.build_quiz_stub")
     def test_invalid_payload_structure_returns_502_no_db_write(self, mock_build):
         bad = _make_valid_payload()
-        bad["questions"][3]["question_options"] = ["A", "B", "C"]  # 3 statt 4 Optionen
+        bad["questions"][3]["question_options"] = [
+            "A", "B", "C"]  # 3 statt 4 Optionen
         mock_build.return_value = bad
         res = self.client.post(self.url, self.valid_url, format="json")
         self.assertEqual(res.status_code, status.HTTP_502_BAD_GATEWAY)
