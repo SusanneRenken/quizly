@@ -3,7 +3,10 @@ __pycache__/
 *.py[cod]
 *.pyo
 *.pyd
+*.pkl
 *.so
+
+# Distribution / packaging
 *.egg
 *.egg-info/
 dist/
@@ -11,6 +14,7 @@ build/
 
 # Virtual environments
 venv/
+env/
 .env/
 .venv/
 
@@ -33,6 +37,7 @@ staticfiles/
 .vscode/
 .idea/
 *.swp
+*.swo
 
 # Environment files
 .env
