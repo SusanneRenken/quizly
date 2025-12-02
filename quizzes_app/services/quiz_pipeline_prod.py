@@ -15,7 +15,7 @@ import os
 import tempfile
 from google import genai
 
-from management_app.services.error import AIPipelineError
+from quizzes_app.services.error import AIPipelineError
 
 
 def build_quiz_prod(video_url: str) -> dict:

@@ -1,6 +1,6 @@
 from rest_framework.test import APITestCase
-from management_app.services.persist_quiz import validate_payload
-from management_app.services.error import AIPipelineError
+from quizzes_app.services.persist_quiz import validate_payload
+from quizzes_app.services.error import AIPipelineError
 
 
 class ValidatePayloadTests(APITestCase):

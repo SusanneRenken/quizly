@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
 
-from management_app.models import Quiz, Question
+from quizzes_app.models import Quiz, Question
 
 
 class QuizViewSetTests(APITestCase):

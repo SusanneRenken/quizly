@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
-from management_app.models import Quiz, Question
+from quizzes_app.models import Quiz, Question
 
 
 class ModelStrTests(TestCase):

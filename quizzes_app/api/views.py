@@ -10,13 +10,13 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import status, generics, viewsets
 from rest_framework.response import Response
 
-from management_app.models import Quiz
-from .serializers import (
+from quizzes_app.models import Quiz
+from quizzes_app.api.serializers import (
     QuizSerializer,
     CreateQuizSerializer,
     QuizWithTimestampsSerializer,
 )
-from .permissions import IsQuizOwner
+from quizzes_app.api.permissions import IsQuizOwner
 
 
 class QuizCreateView(generics.CreateAPIView):

@@ -14,11 +14,11 @@ from django.conf import settings
 from rest_framework import serializers
 from urllib.parse import urlparse, parse_qs
 
-from management_app.models import Question, Quiz
-from management_app.services.quiz_pipeline_prod import build_quiz_prod
-from management_app.services.quiz_pipeline_stub import build_quiz_stub
-from management_app.services.persist_quiz import persist_quiz
-from management_app.services.error import AIPipelineError
+from quizzes_app.models import Question, Quiz
+from quizzes_app.services.quiz_pipeline_prod import build_quiz_prod
+from quizzes_app.services.quiz_pipeline_stub import build_quiz_stub
+from quizzes_app.services.persist_quiz import persist_quiz
+from quizzes_app.services.error import AIPipelineError
 
 
 YOUTUBE_DOMAINS = {"youtube.com", "www.youtube.com", "m.youtube.com", "youtu.be"}

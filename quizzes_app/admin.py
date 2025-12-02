@@ -9,7 +9,7 @@ Provides:
 """
 
 from django.contrib import admin
-from management_app.models import Quiz, Question
+from quizzes_app.models import Quiz, Question
 
 
 @admin.register(Quiz)

@@ -7,8 +7,8 @@ Includes:
 """
 
 from django.db import transaction
-from management_app.models import Quiz, Question
-from management_app.services.error import AIPipelineError
+from quizzes_app.models import Quiz, Question
+from quizzes_app.services.error import AIPipelineError
 
 
 @transaction.atomic

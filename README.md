@@ -142,7 +142,7 @@ quizly-backend/
 │   │   ├── urls.py
 │   │   ├── view.py
 │   ├── tests/
-├── management_app/
+├── quizzes_app/
 │   ├── api/
 │   │   ├── permissions.py
 │   │   ├── serializer.py
