@@ -37,6 +37,7 @@ ALLOWED_HOSTS = []
 
 # Application definition
 INSTALLED_APPS = [
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -62,21 +63,18 @@ MIDDLEWARE = [
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-
     'http://127.0.0.1:5500',
-
     'http://localhost:5500',
-
 ]
 
 
 CORS_ALLOWED_ORIGINS = [
-
     'http://127.0.0.1:5500',
-
     'http://localhost:5500',
-
 ]
+
+# Allow cookies/credentials to be included in cross-site requests
+CORS_ALLOW_CREDENTIALS = True
 
 ROOT_URLCONF = 'core.urls'
 
@@ -168,4 +166,4 @@ SIMPLE_JWT = {
 }
 
 # Quizly: pipeline mode ("stub" or "prod")
-QUIZLY_PIPELINE_MODE = "stub"
+QUIZLY_PIPELINE_MODE = "prod"

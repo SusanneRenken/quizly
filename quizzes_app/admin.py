@@ -30,6 +30,7 @@ class QuizAdmin(admin.ModelAdmin):
     list_filter = ("created_at", "owner")
     readonly_fields = ("created_at", "updated_at")
 
+    Quiz._meta.verbose_name_plural = "Quizzes"
 
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
