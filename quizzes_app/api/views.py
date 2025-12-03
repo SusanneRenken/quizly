@@ -6,7 +6,7 @@ This module provides:
 - QuizViewSet: Full CRUD operations for quizzes with owner-based permissions.
 """
 
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework import status, generics, viewsets
 from rest_framework.response import Response
 
@@ -66,6 +66,11 @@ class QuizViewSet(viewsets.ModelViewSet):
         Allow full queryset for detail actions (permission controls access).
         """
         if self.action == "list":
-            return Quiz.objects.filter(owner=self.request.user).order_by("-created_at")
+            user = getattr(self.request, "user", None)
+            if not (user and user.is_authenticated):
+                # If the requester is anonymous, return an empty queryset
+                return Quiz.objects.none()
+
+            return Quiz.objects.filter(owner=user).order_by("-created_at")
 
         return Quiz.objects.all()

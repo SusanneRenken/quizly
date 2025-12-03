@@ -16,6 +16,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 
 from .serializers import RegistrationSerializer, LoginSerializer
+from django.conf import settings
 
 
 class RegistrationView(APIView):
@@ -66,12 +67,14 @@ class LoginView(TokenObtainPairView):
         access = response.data.get("access")
         user_data = response.data.get("user")
 
-        # Store tokens in HttpOnly cookies
+        # Store tokens in HttpOnly cookies. For local DEBUG allow insecure cookies.
+        secure_flag = not getattr(settings, "DEBUG", False)
+
         response.set_cookie(
             key="access_token",
             value=access,
             httponly=True,
-            secure=True,
+            secure=secure_flag,
             samesite="Lax",
         )
 
@@ -79,11 +82,11 @@ class LoginView(TokenObtainPairView):
             key="refresh_token",
             value=refresh,
             httponly=True,
-            secure=True,
+            secure=secure_flag,
             samesite="Lax",
         )
 
-        # Clean response body
+        # Keep response body minimal but include user info
         response.data = {
             "detail": "Login successfully!",
             "user": user_data,
@@ -143,8 +146,8 @@ class RefreshTokenView(TokenRefreshView):
 
         if refresh_token is None:
             return Response(
-                {"detail": "Refresh token not provided."},
-                status=status.HTTP_401_UNAUTHORIZED,
+                {"detail": "Refresh token not found."},
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         serializer = self.get_serializer(data={"refresh": refresh_token})
@@ -153,7 +156,7 @@ class RefreshTokenView(TokenRefreshView):
             serializer.is_valid(raise_exception=True)
         except Exception:
             return Response(
-                {"detail": "Invalid refresh token."},
+                {"detail": "Refresh token invalid."},
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
