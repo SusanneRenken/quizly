@@ -33,14 +33,14 @@ class LoginTests(APITestCase):
     def test_refresh_token_missing(self):
         refresh_url = reverse('token_refresh')
         refresh_response = self.client.post(refresh_url, {}, format='json')
-        self.assertEqual(refresh_response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(refresh_response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn('detail', refresh_response.data)
-        self.assertEqual(refresh_response.data['detail'], "Refresh token not provided.")
+        self.assertEqual(refresh_response.data['detail'], "Refresh token not found.")
 
     def test_refresh_token_invalid(self):
         refresh_url = reverse('token_refresh')
         self.client.cookies['refresh_token'] = 'invalidtoken'
         refresh_response = self.client.post(refresh_url, {}, format='json')
-        self.assertEqual(refresh_response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(refresh_response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn('detail', refresh_response.data)
-        self.assertEqual(refresh_response.data['detail'], "Invalid refresh token.")
+        self.assertEqual(refresh_response.data['detail'], "Refresh token invalid.")

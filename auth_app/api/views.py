@@ -157,7 +157,7 @@ class RefreshTokenView(TokenRefreshView):
         except Exception:
             return Response(
                 {"detail": "Refresh token invalid."},
-                status=status.HTTP_401_UNAUTHORIZED,
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         access_token = serializer.validated_data.get("access")

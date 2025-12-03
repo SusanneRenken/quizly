@@ -28,6 +28,7 @@ load_dotenv()
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+QUIZLY_PIPELINE_MODE = os.getenv("QUIZLY_PIPELINE_MODE", "stub")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -160,10 +161,8 @@ REST_FRAMEWORK = {
 
 # JWT settings
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(seconds=50),
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     "BLACKLIST_AFTER_ROTATION": True,
 }
 
-# Quizly: pipeline mode ("stub" or "prod")
-QUIZLY_PIPELINE_MODE = "prod"
