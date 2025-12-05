@@ -26,8 +26,7 @@ env/
 db.sqlite3
 
 # Ignore Django app migrations (keep __init__.py so apps remain packages)
-**/migrations/
-!**/migrations/__init__.py
+**/migrations/__pycache__/
 
 # Media / Static
 media/
