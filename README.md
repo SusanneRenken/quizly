@@ -66,6 +66,7 @@ SECRET_KEY=your-django-secret-key
 GEMINI_API_KEY=your-gemini-api-key
 QUIZLY_PIPELINE_MODE = "prod" # or "stub"
 ```
+→ Pipeline mode explanation: [CreateQuiz – AI / Stub Pipeline](#createquiz--ai--stub-pipeline).
 
 ### Create a virtual environment
 ```bash
@@ -76,6 +77,11 @@ python -m venv env
 ### Install dependencies
 ```bash
 pip install -r requirements.txt
+```
+
+### Create migrations
+```bash
+python manage.py makemigrations
 ```
 
 ### Apply migrations
@@ -139,8 +145,15 @@ Example request:
 
 Modes:
 
-- `QUIZLY_PIPELINE_MODE=stub` – deterministic stub output (fast, for development)
-- `QUIZLY_PIPELINE_MODE=prod` – Whisper transcription + Gemini Flash quiz generation
+- `QUIZLY_PIPELINE_MODE=stub` – Fast development mode
+Returns a predefined example quiz without running any external tools.
+This mode skips downloading the video, audio extraction, transcription, and AI generation.
+Useful for local development and quick end-to-end testing.
+
+- `QUIZLY_PIPELINE_MODE=prod` – Full AI production mode
+Runs the complete pipeline:
+YouTube download → audio extraction (ffmpeg) → transcription (Whisper) → quiz generation (Gemini Flash).
+Requires ffmpeg, yt_dlp, Whisper, and a valid Gemini API key.
 
 ### Quiz Endpoints
 
