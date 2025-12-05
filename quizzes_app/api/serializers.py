@@ -10,16 +10,10 @@ Includes:
 """
 
 import re
-from django.conf import settings
 from rest_framework import serializers
 from urllib.parse import urlparse, parse_qs
 
 from quizzes_app.models import Question, Quiz
-from quizzes_app.services.quiz_pipeline_prod import build_quiz_prod
-from quizzes_app.services.quiz_pipeline_stub import build_quiz_stub
-from quizzes_app.services.persist_quiz import persist_quiz
-from quizzes_app.services.error import AIPipelineError
-
 
 YOUTUBE_DOMAINS = {"youtube.com", "www.youtube.com", "m.youtube.com", "youtu.be"}
 VIDEO_ID_RE = re.compile(r"^[A-Za-z0-9_-]{11}$")
@@ -96,56 +90,28 @@ class QuizWithTimestampsSerializer(serializers.ModelSerializer):
 
 class CreateQuizSerializer(serializers.Serializer):
     """
-    Serializer for creating a quiz from a YouTube URL.
-
+    Serializer for creating a quiz.
     Responsibilities:
-    - Validate URL and extract YouTube video ID.
-    - Normalize to a canonical video URL.
-    - Trigger pipeline (stub or prod).
-    - Persist generated quiz.
+    - Validates the YouTube URL
+    - Extracts the video ID
+    - Returns a normalized URL
     """
 
     url = serializers.URLField()
 
     def validate_url(self, value):
-        """
-        Validate that the URL is a valid YouTube link and extract the video ID.
-        Returns a normalized YouTube URL.
-        """
         parsed = urlparse(value.strip())
         netloc = parsed.netloc.lower()
 
         if netloc not in YOUTUBE_DOMAINS:
             raise serializers.ValidationError("URL must be a YouTube link.")
 
-        # Extract video ID depending on domain format
-        video_id = None
         if netloc in {"youtube.com", "www.youtube.com", "m.youtube.com"}:
             video_id = parse_qs(parsed.query).get("v", [None])[0]
-        elif netloc == "youtu.be":
+        else:
             video_id = parsed.path.lstrip("/")
 
         if not video_id or not VIDEO_ID_RE.match(video_id):
             raise serializers.ValidationError("Invalid YouTube video ID.")
 
         return f"https://www.youtube.com/watch?v={video_id}"
-
-    def create(self, validated_data):
-        """
-        Create a quiz using either the stub or prod pipeline, depending on settings.
-        """
-        user = self.context["request"].user
-        video_url = validated_data["url"]
-
-        try:
-            mode = getattr(settings, "QUIZLY_PIPELINE_MODE", "stub")
-            if mode == "prod":
-                payload = build_quiz_prod(video_url)
-            else:
-                payload = build_quiz_stub(video_url)
-        except AIPipelineError:
-            # Pipeline errors propagate as-is for clear API error handling
-            raise
-
-        quiz = persist_quiz(owner=user, video_url=video_url, payload=payload)
-        return quiz

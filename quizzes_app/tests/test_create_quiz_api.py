@@ -45,7 +45,7 @@ class CreateQuizApiTests(APITestCase):
         res = self.client.post(self.url, {"url": "https://www.youtube.com/watch?v=abcdefghijk"}, format="json")
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    @patch("quizzes_app.api.serializers.build_quiz_stub", return_value=_make_valid_payload())
+    @patch("quizzes_app.api.views.build_quiz_stub", return_value=_make_valid_payload())
     def test_youtu_be_normalization_persisted(self, _mock_build):
         res = self.client.post(self.url, {"url": "https://youtu.be/abcdefghijk"}, format="json")
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
@@ -53,7 +53,7 @@ class CreateQuizApiTests(APITestCase):
         self.assertEqual(quiz.video_url, "https://www.youtube.com/watch?v=abcdefghijk")
 
     @override_settings(QUIZLY_PIPELINE_MODE="prod")
-    @patch("quizzes_app.api.serializers.build_quiz_prod", return_value=_make_valid_payload())
+    @patch("quizzes_app.api.views.build_quiz_prod", return_value=_make_valid_payload())
     def test_create_quiz_uses_prod_pipeline_and_persists_quiz(self, mock_build):
         payload = {"url": "https://www.youtube.com/watch?v=abcdefghijk"}
 
@@ -67,7 +67,7 @@ class CreateQuizApiTests(APITestCase):
         self.assertEqual(quiz.questions.count(), 10)
 
     @override_settings(QUIZLY_PIPELINE_MODE="prod")
-    @patch("quizzes_app.api.serializers.build_quiz_prod", side_effect=AIPipelineError("boom"))
+    @patch("quizzes_app.api.views.build_quiz_prod", side_effect=AIPipelineError("boom"))
     def test_prod_pipeline_failure_returns_502_and_no_db_write(self, _mock_build):
         payload = {"url": "https://www.youtube.com/watch?v=abcdefghijk"}
 

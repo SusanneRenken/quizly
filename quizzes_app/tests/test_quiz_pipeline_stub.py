@@ -41,13 +41,13 @@ class CreateQuizStubTests(APITestCase):
         self.assertIn("questions", res.data)
         self.assertEqual(len(res.data["questions"]), 10)
 
-    @patch("quizzes_app.api.serializers.build_quiz_stub", side_effect=AIPipelineError("boom"))
+    @patch("quizzes_app.api.views.build_quiz_stub", side_effect=AIPipelineError("boom"))
     def test_pipeline_failure_returns_502_and_no_db_write(self, _mock):
         res = self.client.post(self.url, self.valid_url, format="json")
         self.assertEqual(res.status_code, status.HTTP_502_BAD_GATEWAY)
         self.assertEqual(Quiz.objects.count(), 0)
 
-    @patch("quizzes_app.api.serializers.build_quiz_stub")
+    @patch("quizzes_app.api.views.build_quiz_stub")
     def test_invalid_payload_structure_returns_502_no_db_write(self, mock_build):
         bad = _make_valid_payload()
         bad["questions"][3]["question_options"] = [
@@ -58,7 +58,7 @@ class CreateQuizStubTests(APITestCase):
         self.assertEqual(Quiz.objects.count(), 0)
 
     @patch("quizzes_app.services.persist_quiz.Question.objects.bulk_create", side_effect=Exception("db fail"))
-    @patch("quizzes_app.api.serializers.build_quiz_stub", return_value=_make_valid_payload())
+    @patch("quizzes_app.api.views.build_quiz_stub", return_value=_make_valid_payload())
     def test_atomic_rollback_on_db_error(self, _mock_build, _mock_bulk):
         with self.assertRaises(Exception):
             self.client.post(self.url, self.valid_url, format="json")
